@@ -1,0 +1,206 @@
+
+
+
+
+
+
+
+# 📄 README.md — Region-Based Medical Image Encryption Using Chaotic Neural Networks and Hyper-Chaotic Systems
+
+---
+
+## 📚 Project Description
+
+This repository contains the implementation of a **secure and lightweight medical image encryption algorithm** using a **Chaotic Neural Network (CNN)** and **4D hyper-chaotic system**.  
+The method focuses on the **Region of Interest (ROI)** for strong encryption, while efficiently compressing and encrypting the **non-ROI** to optimize transmission and storage.
+
+It is specifically designed for **telemedicine, cloud healthcare systems**, and **remote diagnosis**, where security and speed are critical.
+
+---
+
+## 🚀 Main Highlights
+
+- **Region-Based Encryption**: Only encrypt critical diagnostic areas (ROI) with high precision.
+- **Chaotic Neural Networks**: Weights and biases generated directly from hyper-chaotic systems — no need for training.
+- **4D Hyper-Chaotic System**: Provides strong random key sequences for non-ROI encryption.
+- **Compression (JPEG2000)**: Reduces data size for non-ROI without losing diagnostic fidelity.
+- **Double Pixel Shuffling**: Two-stage pixel shuffling using chaotic sequences.
+- **Strong Security Metrics**: High entropy, NPCR, UACI, and extremely low pixel correlation after encryption.
+
+---
+
+## 🏗 Project Structure
+
+```bash
+region-based-medical-encryption/
+│
+├── encryption_script.py           # Encrypts medical images
+├── decryption_script.py            # Decrypts medical images
+├── helper_functions.py             # Chaotic system, segmentation, neural network code
+├── README.md                       # Project documentation (this file)
+├── LICENSE                         # Open source license (MIT)
+└── sample_images/
+    ├── brain_mri_sample.jpg
+    └── mammogram_sample.jpg
+```
+
+---
+
+## 🔑 Key Concepts
+
+| Concept | Description |
+|:-------|:------------|
+| **ROI (Region of Interest)** | Part of medical image containing vital diagnostic information, needs highest protection. |
+| **Non-ROI** | Less critical regions — compressed first, then encrypted. |
+| **Chaotic Neural Network** | Neural network weights and biases are initialized using chaotic sequences instead of random values. |
+| **4D Hyperchaotic System** | Dynamically generates encryption keys from a differential equation system. |
+| **Pixel Shuffling and XORing** | Enhances diffusion and confusion properties to protect against attacks. |
+
+---
+
+## 🛠 Requirements
+
+```bash
+pip install numpy scipy matplotlib opencv-python PyWavelets
+```
+
+---
+
+## 📋 How to Run
+
+### 1. Encryption
+
+```bash
+python encryption_script.py --input sample_images/brain_mri_sample.jpg --output encrypted_data.dat
+```
+
+This will generate:
+- Encrypted ROI data
+- Encrypted compressed non-ROI data
+- Metadata (for reconstruction after decryption)
+
+---
+
+### 2. Decryption
+
+```bash
+python decryption_script.py --input encrypted_data.dat --output decrypted_mri_reconstructed.jpg
+```
+
+This will reconstruct the original image from encrypted components.
+
+---
+
+## 🧠 How Encryption Works
+
+**Step-by-Step:**
+
+1. **Image Segmentation**:
+   - Thresholding divides image into ROI and non-ROI.
+   
+2. **ROI Encryption**:
+   - ROI cropped to size (P × R).
+   - Input random image generated using seed from average pixel value.
+   - Chaotic Neural Network initialized from chaotic system outputs weights and biases.
+   - Neural network transforms input into a chaotic image.
+   - Two-step shuffling based on chaotic sequences.
+   - Final XOR operation with chaotic image.
+
+3. **Non-ROI Compression + Encryption**:
+   - JPEG 2000 compresses non-ROI.
+   - XOR encryption using hyper-chaotic sequences.
+
+4. **Save encrypted ROI, encrypted non-ROI, and metadata.**
+
+---
+
+### 🔒 Decryption Steps
+
+- Reverse XOR encryption on non-ROI and ROI parts.
+- Reverse pixel shuffling using stored metadata.
+- Merge ROI and non-ROI back into full-size decrypted image.
+
+---
+
+## 📈 Security Metrics Achieved
+
+| Metric | Achieved Value | Ideal Target |
+|:------|:---------------|:------------|
+| Entropy | ~7.998 | ~8.0 (perfect) |
+| NPCR (ROI) | >99.6% | >99% |
+| UACI (ROI) | ~33% | ~33% |
+| SSIM (Decrypted vs Original) | ~0.99 | ~1 |
+| Correlation (Encrypted Image) | ≈ 0 | ≈ 0 |
+| MI (Mutual Information) | ≈ 0 | ≈ 0 |
+
+---
+
+## 📊 Flowcharts
+
+### Encryption Flowchart:
+
+```
+Input Medical Image
+         ↓
+Segmentation into ROI and Non-ROI
+         ↓
+Compress Non-ROI → XOR Encrypt with Hyper-Chaotic Sequence
+         ↓
+Crop ROI → Chaotic Neural Network → Chaotic Image
+         ↓
+Two-stage ROI Pixel Shuffling → XOR with Chaotic Image
+         ↓
+Save Encrypted Data + Metadata
+```
+
+---
+
+### Decryption Flowchart:
+
+```
+Load Encrypted Data + Metadata
+         ↓
+Decrypt Non-ROI → Decompress
+         ↓
+Decrypt ROI (Reverse XOR + Reverse Shuffling)
+         ↓
+Reconstruct Full Medical Image
+```
+
+---
+
+## 📖 Citation
+
+If you use this project in your research, please cite:
+
+> Subhadip Rana, Sanchita Bere, Sandipana Bhattacharjee,  Hrishikesh Mondal,Mrinal Kanti Mandal,  
+> "Region-Based Medical Image Encryption with Chaotic Neural Networks and Hyper-Chaotic Systems," 2025.  
+
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License** — free for academic and research purposes with proper citation.
+
+---
+
+## 🤝 Contributions
+
+Pull requests, bug reports, and feature suggestions are welcome!  
+Please open an issue or submit a pull request if you find any improvements.
+
+---
+
+# 📣 Contact
+
+subhadiprana0@gmail.com
+
+---
+
+# 🛡️ Acknowledgment
+
+Developed as part of research work at:
+- Department of Physics, National Institute of Technology (NIT), Durgapur, India
+
+
