@@ -1,0 +1,94 @@
+import numpy as np
+from scipy.integrate import odeint
+import math
+import cv2
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+# Define parameters for the chaotic system
+a, b, c, d, aph = 3, 3, 1, 8, 0.0011
+
+# Define the chaotic system dynamics
+def system(p, t, a, b, c, d, aph):
+    dxdt = p[1]
+    dydt = p[2]
+    dzdt = d * p[3]
+    dwdt = -(b * p[1]) - (c * p[3]) - (aph * math.sinh(p[2] + (a * p[0])))
+    return [dxdt, dydt, dzdt, dwdt]
+
+# Neural network dimensions
+i_nodes = 75* 70 # Input layer size
+h_nodes = 3          # Single hidden layer size
+o_nodes = 75 * 70  # Output layer size
+
+# Calculate the total number of chaotic values needed
+required_length = (
+    h_nodes * i_nodes +         # Weights between input and hidden layer
+    o_nodes * h_nodes +         # Weights between hidden and output layer
+    h_nodes + o_nodes           # Biases for hidden and output layers
+)
+
+# Set initial conditions and time increment
+initial_conditions = [1, 0.1, 0, 0]
+time_step = 0.01
+t = np.arange(0, time_step * required_length, time_step)
+
+# Iterate the chaotic system to accumulate enough values
+sol = odeint(system, initial_conditions, t, args=(a, b, c, d, aph))
+
+# Flatten the solution to use as weights and biases
+chaos_data = sol.flatten()[:required_length]  # Truncate to exact required length
+
+# Assign values to weights and biases
+weight1 = chaos_data[:h_nodes * i_nodes].reshape(h_nodes, i_nodes)
+weight2 = chaos_data[h_nodes * i_nodes: h_nodes * i_nodes + o_nodes * h_nodes].reshape(o_nodes, h_nodes)
+
+bias_start = h_nodes * i_nodes + o_nodes * h_nodes
+bias1 = chaos_data[bias_start: bias_start + h_nodes]
+bias2 = chaos_data[bias_start + h_nodes: bias_start + h_nodes + o_nodes]
+
+# Define ReLU function
+def relu(x):
+    return np.maximum(0, x)
+
+# Read input image and generate input data
+image_path = "/content/Y4.jpg"
+image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)  # Read the image in grayscale
+
+# Compute the average pixel value
+average_pixel_value = np.mean(image)
+print(int(average_pixel_value))
+np.random.seed(int(average_pixel_value))
+input_data = np.random.rand(75, 70)
+flattened_input = input_data.flatten()
+
+# Forward pass through the network with one hidden layer
+h_output = relu(np.dot(weight1, flattened_input) + bias1)
+o_output1 = np.dot(weight2, h_output) + bias2
+o_output = np.array(o_output1 % 256, dtype=int)
+
+# Reshape output to 135x130
+o_output_reshaped = o_output.reshape(75, 70)
+plt.imshow(o_output_reshaped, cmap='gray')
+plt.show()
+
+# Save output image
+output_image_path = "/content/output_image.png"
+cv2.imwrite(output_image_path, o_output_reshaped)
+
+# Print shapes to verify
+print("Weight1 shape:", weight1.shape)
+print("Weight2 shape:", weight2.shape)
+print("Bias1 shape:", bias1.shape)
+print("Bias2 shape:", bias2.shape)
+
+# Optional: plot the chaotic attractor in 3D for visualization
+fig = plt.figure(figsize=(12, 8))
+ax = fig.add_subplot(111, projection='3d')
+ax.plot(sol[:, 0], sol[:, 1], sol[:, 2], label='Chaotic Trajectory', color='blue')
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_zlabel('z')
+ax.set_title('3D Plot of the Chaotic System')
+ax.legend()
+plt.show()
